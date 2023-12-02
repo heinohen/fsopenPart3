@@ -11,12 +11,35 @@
 
 // otetaan käyttöön express, joka on tällä kertaa funktio,
 // jota kutsumalla luodaan muuttujaan app sijoitettava Express-sovellusta vastaava olio
-
+var morgan = require('morgan')
 const express = require('express')
 const app = express()
+// 3.7
+// Lisää sovellukseesi loggausta tekevä middleware morgan.
+// Konfiguroi se logaamaan konsoliin tiny-konfiguraation mukaisesti.
+// ---> app.use(morgan('tiny'))
+// 3.8*: puhelinluettelon backend step8
+// Konfiguroi morgania siten, että se näyttää myös HTTP POST ‑pyyntöjen
+// mukana tulevan datan
+// POST /api/persons 200 61 - 4.896 ms {"name":"Liisa Marttinen","number":"040-243563"}
+
+// **To define a token, simply invoke morgan.token()
+// ** with the name and a callback function. This callback function is expected to
+// ** return a string value.
+// ** The value returned is then available as ":type" in this case:
+// ** example morgan.token('type', function (req, res) { return req.headers['content-type'] })
+// ** express 
+// 3. 	req.body 
+// It contains key-value pairs of data submitted in the request body.
+// By default, it is undefined, and is populated when you use body-parsing middleware such as body-parser.
+morgan.token('body', (req, res) => 
+    req.method === 'POST' ? JSON.stringify(req.body) : '')
+app.use(morgan(':method :url :status :res[content-length] :response-time ms - :body'))
+
 // Otetaan json-parseri käyttöön
 app.use(express.json())
 
+// Kovakoodatut henkilöt
 let persons = [
     {
         id: 1,
