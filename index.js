@@ -11,9 +11,15 @@
 
 // otetaan käyttöön express, joka on tällä kertaa funktio,
 // jota kutsumalla luodaan muuttujaan app sijoitettava Express-sovellusta vastaava olio
-var morgan = require('morgan')
+const morgan = require('morgan')
 const express = require('express')
+const cors = require('cors')
 const app = express()
+
+app.use(express.static('dist'))
+// Otetaan middleware käyttöön toistaiseksi sellaisella konfiguraatiolla,
+// joka sallii kaikista origineista tulevat pyynnöt kaikkiin backendin Express routeihin:
+app.use(cors())
 // 3.7
 // Lisää sovellukseesi loggausta tekevä middleware morgan.
 // Konfiguroi se logaamaan konsoliin tiny-konfiguraation mukaisesti.
@@ -38,6 +44,8 @@ app.use(morgan(':method :url :status :res[content-length] :response-time ms - :b
 
 // Otetaan json-parseri käyttöön
 app.use(express.json())
+
+
 
 // Kovakoodatut henkilöt
 let persons = [
@@ -190,7 +198,7 @@ app.post('/api/persons', (request, response) => {
 })
 
 // Palvelimen kuunneltava portti
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
     console.log(`Server is runnin' on port ${PORT}`)
 })
