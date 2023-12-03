@@ -2,7 +2,7 @@
 
 Huom: Tämän osa tehtäväsarja kannattaa tehdä omaan Git-repositorioon ja suoraan repositorion juureen! Jos et tee näin, joudut ongelmiin tehtävässä 3.10
 
-Linkki sovellukseen [tässä](https://phonebook-fsopen.onrender.com) 
+Linkki sovellukseen [tässä](https://phonebook-fsopen.onrender.com)
 
 ## Tehtävät
 
@@ -17,3 +17,4 @@ Linkki sovellukseen [tässä](https://phonebook-fsopen.onrender.com)
 - [x] 3.9 Laita backend toimimaan edellisessä osassa tehfyn puhelinluettelon frontendin kanssa
 - [x] 3.10 Vie sovelluksen backend internetiin
 - [x] 3.11 Generoi frontendistä tuotantoversio ja lisää se sovellukseen
+- [x] 3.12 Tee puhelinluettelosovellukselle pilvessä oleva MongoDB-tietokanta Mongo DB Atlaksen avulla
