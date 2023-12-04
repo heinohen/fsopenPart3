@@ -72,7 +72,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "build:ui": "rm -rf dist && cd ./front && npm run build && cp -r dist ../",
+    "build:ui": "rm -rf dist && cd ../fsopenPart3-front && npm run build && cp -r dist ../fsopenPart3/",
     "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
