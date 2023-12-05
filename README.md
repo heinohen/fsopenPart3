@@ -3,6 +3,9 @@
 Huom: Tämän osa tehtäväsarja kannattaa tehdä omaan Git-repositorioon ja suoraan repositorion juureen! Jos et tee näin, joudut ongelmiin tehtävässä 3.10
 
 Linkki sovellukseen [tässä](https://phonebook-fsopen.onrender.com)
+Huom. avautuminen voi kestää, koska tehty ilmaisella tilillä jolla on ominaisuutena, että inaktivisuuden vuoksi ne ajetaan alas ja ylös kysynnän mukaan
+Renderin oma sivu asiaan liittyen löytyy [täältä](https://render.com/docs/free)
+
 
 ## Tehtävät
 
