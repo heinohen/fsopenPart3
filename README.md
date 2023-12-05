@@ -6,7 +6,6 @@ Linkki sovellukseen [tässä](https://phonebook-fsopen.onrender.com)
 Huom. avautuminen voi kestää, koska tehty ilmaisella tilillä jolla on ominaisuutena, että inaktivisuuden vuoksi ne ajetaan alas ja ylös kysynnän mukaan
 Renderin oma sivu asiaan liittyen löytyy [täältä](https://render.com/docs/free)
 
-
 ## Tehtävät
 
 - [x] 3.1 Tee Node sovellus
@@ -21,3 +20,5 @@ Renderin oma sivu asiaan liittyen löytyy [täältä](https://render.com/docs/fr
 - [x] 3.10 Vie sovelluksen backend internetiin
 - [x] 3.11 Generoi frontendistä tuotantoversio ja lisää se sovellukseen
 - [x] 3.12 Tee puhelinluettelosovellukselle pilvessä oleva MongoDB-tietokanta Mongo DB Atlaksen avulla
+- [x] 3.13 Muuta backendin kaikkien puhelintietojen näyttämistä siten, että backend hakee näytettävät puhelintiedot tietokannasta, myös erillinen oma moduuli mongooselle (huom. delete meni rikki nyt, korjataan vähän edempänä)
+- [x] 3.14 Muuta backendiä siten, että uudet numerot tallennetaan tietokantaan. Varmista, että frontend toimii muutosten jälkeen

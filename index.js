@@ -11,15 +11,46 @@
 
 // otetaan käyttöön express, joka on tällä kertaa funktio,
 // jota kutsumalla luodaan muuttujaan app sijoitettava Express-sovellusta vastaava olio
-const morgan = require('morgan')
 const express = require('express')
-const cors = require('cors')
 const app = express()
+const cors = require('cors')
+const morgan = require('morgan')
 
+require('dotenv').config()
+
+const Person = require('./models/person')
+
+
+const requestLogger = (request, response, next) => {
+    console.log('Method:', request.method)
+    console.log('Path:  ', request.path)
+    console.log('Body:  ', request.body)
+    console.log('---')
+    next()
+}
+
+// Otetaan käyttöön error handleri
+const errorHandler = (error, request, response, next) => {
+    console.log(error.message)
+    
+    if (error.name === 'CastError') {
+        return response.status(404).send( { error: 'malformatted id' } )
+    }
+}
+
+// Otetaan käyttöön unknown endpoist
+const unknownEndpoint = (request, response) => {
+    response.status(404).send( { error: 'unknown endpoint '})
+}
+
+app.use(cors())
+// Otetaan json-parseri käyttöön
+app.use(express.json())
+app.use(requestLogger)
 app.use(express.static('dist'))
+
 // Otetaan middleware käyttöön toistaiseksi sellaisella konfiguraatiolla,
 // joka sallii kaikista origineista tulevat pyynnöt kaikkiin backendin Express routeihin:
-app.use(cors())
 // 3.7
 // Lisää sovellukseesi loggausta tekevä middleware morgan.
 // Konfiguroi se logaamaan konsoliin tiny-konfiguraation mukaisesti.
@@ -42,35 +73,6 @@ morgan.token('body', (req, res) =>
     req.method === 'POST' ? JSON.stringify(req.body) : '')
 app.use(morgan(':method :url :status :res[content-length] :response-time ms - :body'))
 
-// Otetaan json-parseri käyttöön
-app.use(express.json())
-
-
-
-// Kovakoodatut henkilöt
-let persons = [
-    {
-        id: 1,
-        name: "Arto Hellas",
-        number: "040-123456"
-    },     
-    {
-        id: 2,
-        name: "Ada Lovelace",
-        number: "39-50-42"
-    },
-    {
-        id: 3,
-        name: "Dan Abramov",
-        number: "040-5555446"
-    },
-    {
-        id: 4,
-        name: "Arton Äiti",
-        number: "123321"
-    }
-]
-
 // Määritellään sovellukselle kaksi routea:
 
 // 1) Määrittelee tapahtumankäsittelijän, 
@@ -92,113 +94,111 @@ app.get('/', (request,response) => {
 // sivu jonka tulee kertoa pyynnön tekohetki, sekä se kuinka monta puhelinluettelotietoa sovelluksen muistissa olevassa taulukossa on
 // saadaa palautettua persons.lenghtillä paljonko siellä on
 // Date() antaa js:ssä tämän ajan
-app.get('/info', (request, response) => {
-    const date = Date()
-    response.send(
-        `<div>
-        <p>Phonebook has info for ${persons.length} people</p>
-        <p>${date}
-        </div>`
-    )
+app.get('/info', (request, response, next) => {
+    Person.find({}).then(persons => {
+    
+        const date = Date()
+        response.send(
+            `<div>
+            <p>Phonebook has info for ${persons.length} people</p>
+            <p>${date}
+            </div>
+            `
+        )
+    })
+    .catch((error) => next(error))
 })
 
 
 
 // Kaikki resurssit listattuna
-app.get('/api/persons', (request, response) => {
-    response.json(persons)
-})
-// Yksittäisen resurssin haku:
-// tehdään route,
-// muistiinpanon identifioi URL, joka on muotoa /api/persons/10 lopussa oleva luku vastaa resurssin
-// muistiinpanon id:tä
+// TIETOKANTAVERSIO
+app.get('/api/persons', (request, response, next) => {
+    Person.find({}).then(persons => {
+        console.log(persons.length)
+        response.json(persons)
+    })
 
-// voimme määritellä Expressin routejen poluille parametreja käyttämällä kaksoispistesyntaksia:
-// Nyt app.get('/api/persons/:id',...) käsittelee kaikki HTTP GET -pyynnöt jotka ovat muotoa
-// api/persons/JOTAIN, jossa JOTAIN on mielivaltainen merkkijono
-app.get('/api/persons/:id', (request,response) => {
-// Polun parametrin id arvoon päästään käsiksi pyynnön tiedot kertovan olion request kautta
-    
-    // Täytyy olla Number(...), muuten ei voi verrata id:tä
-    const id = Number(request.params.id)
-    console.log(id)
-    const person = persons.find(person => person.id === id)
-
-    if (person) {
-        response.json(person)
-    } else {
-        response.status(404).end()
-    }
 })
 
-// Resurssin poisto:
-// Poisto tapahtuu tekemällä HTTP DELETE pyyntö resurssin urliin
-// 3.4 Toteuta toiminnallisuus, jonka avulla puhelinnumerotieto on mahdollista poistaa
-// numerotiedon yksilöivään URL:iin tehtävällä HTTP DELETE pyynnöllä
-app.delete('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id)
-    const pers = persons.filter(p => p.id === id)
-// jos löydetään id niin tämä ei ole tyhjä
-    if (pers.length > 0) {
-        console.log(pers)
-        console.log(id, 'found')
-        persons = persons.filter(person => person.id !== id)
-        console.log(`entry found... deleting id ${id}`)
-        response.status(204).end()
-    } else {
-        console.log('not found, response 404')
-        response.status(404).end()
-    }
-    // jos poisto onnistuu vastataan statuskoodilla 204 "no content"
-})
-
-// Datan vastaanottaminen:
-// Vastaanotto (serverin pääty)
-// Generoidaan jokaiselle henkilölle oma id
-const generateId = () => {return Math.floor(Math.random() * (9999999 - 1) + 1)}
-
+// Muutetaan nyt kaikki operaatiot tietokantaa käyttävään versioon
+// UUSI NUMERO
 app.post('/api/persons', (request, response) => {
-
-// Jos vastaanotetulta datalta puuttuu sisältö kentästä
-// content, vastataan statuskoodilla 400 bad request
-    
-// 3.6 Tee uuuden numeron lisäykseen virheiden käsittely.
-// Pyyntö ei saa onnistua, jos
-// * nimi tai numero puuttuu
-// * lisättävä on jo luettelossa
     const body = request.body
-// tsekataan onko nimi jo
-    const nameScan = persons.filter(p => p.name.toLocaleLowerCase() === body.name.toLowerCase())
 // tsekataan puuttuuko nimi tai onko nimi tyhjä
-    if (!body.name || body.name.length === 0) {
+    if (!body.name) {
         return response.status(400).json({
             error: 'name missing'
         })
-    } else if (nameScan.length > 0) {
-        return response.status(400).json({
-            error: 'duplicate name'
-        })
 // tsekataan puuttuuko numero tai onko numero tyhjä
-    } else if (!body.number || body.number.length === 0 ) {
+    } else if (!body.number) {
         return response.status(400).json({
             error: 'number missing'
         })
     }
-// luodaan person objekti
-    const person = {
-// 3.5 generoi uuden puhelintiedon tunniste Math.randomilla
-        id: generateId(),
+// henkilö-olio luodaan 'Person' konstruktorifunktiolla. Pyyntöön vastataan save-operaation
+// takaisinkutsufunktion sisällä. Näin varmistutaan, että operaation vastaus tapahtuu vain
+// jos operaatio on onnistunut.
+    const person = new Person({
         name: body.name,
         number: body.number
-    }
-    persons = persons.concat(person)
-    // console.log(note)
-    // console.log(request.headers)
-    response.json(person)
+    })
+    person.save().then(savedNote => {
+// Takaisinkutsufunktion parametrina oelva savedNote on talletetettu henkilö. HTTP-pyyntöön
+// palautetaan kuitenki automaattisesti siitä metoridilla toJSON formatoitu muoto
+        response.json(savedNote)
+    })
 })
 
+
+
+
+// Yksittäisen resurssin haku:
+// TIETOKANTAVERSIO
+app.get('/api/persons/:id', (request, response, next) => {
+    Person.findById(request.params.id)
+        .then(person => {
+            if (person) {
+                response.json(person)
+            } else {
+                response.status(404).end()
+            }
+        })
+// Siirretään virheiden käsittely next:ille (expressin virheidenkäsittelijä)
+        .catch((error) => next(error))
+})
+
+// Resurssin poisto:
+// Poisto tapahtuu tekemällä HTTP DELETE pyyntö resurssin urliin
+app.delete('/api/persons/:id', (request, response, next) => {
+    Person.findByIdAndDelete(request.params.id)
+        .then(result => {
+            response.status(204).end()
+        })
+        .catch((error) => next(error))
+})
+
+app.put('/api/persons/:id', (request, response, next) => {
+    const body = request.body
+
+    const person = {
+        name: body.name,
+        number: body.number,
+    }
+
+    Person.findByIdAndUpdate(request.params.id, person, {new: true })
+        .then(updatedPerson => {
+            response.json(updatedPerson)
+        })
+        .catch((error) => next(error))
+}) 
+
+app.use(unknownEndpoint)
+app.use(errorHandler)
+
+
 // Palvelimen kuunneltava portti
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT
 app.listen(PORT, () => {
     console.log(`Server is runnin' on port ${PORT}`)
 })
