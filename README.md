@@ -22,3 +22,7 @@ Renderin oma sivu asiaan liittyen löytyy [täältä](https://render.com/docs/fr
 - [x] 3.12 Tee puhelinluettelosovellukselle pilvessä oleva MongoDB-tietokanta Mongo DB Atlaksen avulla
 - [x] 3.13 Muuta backendin kaikkien puhelintietojen näyttämistä siten, että backend hakee näytettävät puhelintiedot tietokannasta, myös erillinen oma moduuli mongooselle (huom. delete meni rikki nyt, korjataan vähän edempänä)
 - [x] 3.14 Muuta backendiä siten, että uudet numerot tallennetaan tietokantaan. Varmista, että frontend toimii muutosten jälkeen
+- [x] 3.15 Muuta backendiä siten, että numerotietojen poistaminen päivittyy tietokantaan
+- [x] 3.16 Keskitä sovelluksen virheiden käsittely middlewareen
+- [x] 3.17 Laajenna backend käsittelemään numeron päivitys HTTP PUT pyynnöllä
+- [x] 3.18 Päivitä myös /api/persons/:id ja /info käsittely
