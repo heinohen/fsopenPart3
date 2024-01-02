@@ -35,9 +35,13 @@ const errorHandler = (error, request, response, next) => {
     
     if (error.name === 'CastError') {
         return response.status(404).send( { error: 'malformatted id' } )
-    } else if (error.name === 'ValidationError') {
-        return response.status(400).json( { error: error.message })
+    } else if (error.name ==='ValidationError') {
+        return response.status(400).send( { error: error.message })
     }
+
+    
+
+    next(error)
 }
 
 // Otetaan käyttöön unknown endpoist
@@ -137,7 +141,9 @@ app.post('/api/persons', (request, response, next) => {
         .then(savedPerson => {
             response.json(savedPerson)
         })
-        .catch(error => next(error))
+        .catch(error => {
+            next(error)
+        })
 })
 
 
