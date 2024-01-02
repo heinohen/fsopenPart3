@@ -29,3 +29,4 @@ Renderin oma sivu asiaan liittyen löytyy [täältä](https://render.com/docs/fr
 - [x] 3.19 Laajenna validaatiota siten, nettä tietokantaan talletettavan nimen on oltava pituudeltaan vähintää kolme merkkiä
 - [x] 3.20 Toteuta sovelluksellesi validaatio, joka huolehtii, että backendiin voi tallettaa ainoastaan oikeassa muodossa olevia puhelinnumeroita
 - [x] 3.21 Generoi päivitetystä sovelluksesta "full stack" ‑versio, eli tee frontendista uusi production build ja kopioi se backendin repositorioon.
+- [x] 3.22 Ota sovellukseesi käyttöön ESLint, ja korjaa kaikki tyylivirheet
