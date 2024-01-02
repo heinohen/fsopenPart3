@@ -35,6 +35,8 @@ const errorHandler = (error, request, response, next) => {
     
     if (error.name === 'CastError') {
         return response.status(404).send( { error: 'malformatted id' } )
+    } else if (error.name === 'ValidationError') {
+        return response.status(400).json( { error: error.message })
     }
 }
 
@@ -123,33 +125,20 @@ app.get('/api/persons', (request, response, next) => {
 
 // Muutetaan nyt kaikki operaatiot tietokantaa käyttävään versioon
 // UUSI NUMERO
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
     const body = request.body
-// tsekataan puuttuuko nimi tai onko nimi tyhjä
-    if (!body.name) {
-        return response.status(400).json({
-            error: 'name missing'
-        })
-// tsekataan puuttuuko numero tai onko numero tyhjä
-    } else if (!body.number) {
-        return response.status(400).json({
-            error: 'number missing'
-        })
-    }
-// henkilö-olio luodaan 'Person' konstruktorifunktiolla. Pyyntöön vastataan save-operaation
-// takaisinkutsufunktion sisällä. Näin varmistutaan, että operaation vastaus tapahtuu vain
-// jos operaatio on onnistunut.
+
     const person = new Person({
         name: body.name,
         number: body.number
     })
-    person.save().then(savedNote => {
-// Takaisinkutsufunktion parametrina oelva savedNote on talletetettu henkilö. HTTP-pyyntöön
-// palautetaan kuitenki automaattisesti siitä metoridilla toJSON formatoitu muoto
-        response.json(savedNote)
-    })
-})
 
+    person.save()
+        .then(savedPerson => {
+            response.json(savedPerson)
+        })
+        .catch(error => next(error))
+})
 
 
 
@@ -178,15 +167,14 @@ app.delete('/api/persons/:id', (request, response, next) => {
         .catch((error) => next(error))
 })
 
+
 app.put('/api/persons/:id', (request, response, next) => {
-    const body = request.body
+    const { name, number } = request.body
 
-    const person = {
-        name: body.name,
-        number: body.number,
-    }
-
-    Person.findByIdAndUpdate(request.params.id, person, {new: true })
+    Person.findByIdAndUpdate(
+        request.params.id,
+        { name, number},
+        {new: true, runValidators: true, context: 'query' })
         .then(updatedPerson => {
             response.json(updatedPerson)
         })

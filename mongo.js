@@ -1,4 +1,8 @@
 
+
+
+
+// DO NOT USE
 const mongoose = require('mongoose')
 
 // Koodi siis olettaa että sille annetaan parametrinä MongoDB ATlasissa luodulle käyttäjälle määritelty salasana.
@@ -16,9 +20,14 @@ mongoose.connect(url)
 // Ensin muuttujaan määritellään muistiinpanon skeema joka kertoo Mongooselle miten muistiinpano-oliot tulee tallettaa tietokantaan
 
 
-
+// 3.19 muutokset
+// validaatio namelle
 const phonebookSchema = new mongoose.Schema({
-    name: String,
+    name : {
+        type: String,
+        minlenght: 3,
+        required: true
+    },
     number: String,
 })
 

@@ -13,9 +13,14 @@ mongoose.connect(url)
         console.log('error connecting to MongoDB ', error.message)
     })
 
+    // 3.19 lisätty validointi nimen pituudelle
 const personSchema = new mongoose.Schema({
-    name: String,
-    number: String,
+    name: {
+        type: String,
+        minlength: 3,
+        required: true
+    },
+    number: String
 })
 
 personSchema.set('toJSON', {

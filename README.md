@@ -26,3 +26,6 @@ Renderin oma sivu asiaan liittyen löytyy [täältä](https://render.com/docs/fr
 - [x] 3.16 Keskitä sovelluksen virheiden käsittely middlewareen
 - [x] 3.17 Laajenna backend käsittelemään numeron päivitys HTTP PUT pyynnöllä
 - [x] 3.18 Päivitä myös /api/persons/:id ja /info käsittely
+- [ ] 3.19 Laajenna validaatiota siten, nettä tietokantaan talletettavan nimen on oltava pituudeltaan vähintää kolme merkkiä
+- [ ] 3.20 Toteuta sovelluksellesi validaatio, joka huolehtii, että backendiin voi tallettaa ainoastaan oikeassa muodossa olevia puhelinnumeroita
+- [ ] 3.21 Generoi päivitetystä sovelluksesta "full stack" ‑versio, eli tee frontendista uusi production build ja kopioi se backendin repositorioon.
